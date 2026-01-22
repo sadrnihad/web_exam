@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using web_exam.DAL;
+
 namespace web_exam
 {
     public class Program
@@ -9,7 +12,17 @@ namespace web_exam
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            //var defaultConnectionString = builder.Configuration.GetConnectionString("Server=JUPITER07\\MAIN;Database=WebTestDb;Trusted_Connection=True;Encrypt=False");
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+
             var app = builder.Build();
+
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -25,6 +38,11 @@ namespace web_exam
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.MapControllerRoute(
+            name: "areas",
+            pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}"
+          );
 
             app.MapControllerRoute(
                 name: "default",
